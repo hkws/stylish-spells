@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+#Set ARG BUILD_ENV default = development
+ARG BUILD_ENV=development
+#Assign the $BUILD_ENV the BUILD_ENV ENV so that it can be accessed
+ENV BUILD_ENV $BUILD_ENV
+#Add the CA Certificate to the container
+ADD ./zscaler.pem /tmp/zscaler.pem
+#Use BUILD_ENV variable within the container to copy the CA certificate into the certificate directory and update
+RUN CERT_DIR=$(openssl version -d | cut -f2 -d \")/certs && \
+    cp /tmp/zscaler.pem $CERT_DIR && \
+    update-ca-certificates && \
+    pip config set global.cert $CERT_DIR/zscaler.pem
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app

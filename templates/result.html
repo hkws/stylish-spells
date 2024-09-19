@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゲーム結果 - 魔法使いのRPG</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div id="game-container">
+        <div id="result-screen">
+            <h1>ゲーム結果: {{"勝利" if victory else "敗北"}}</h1>
+            <p>敵の討伐にかかった時間: {{ battle_time }}秒</p>
+            <p>敵に与えた最大ダメージ: {{ max_damage }}</p>
+            <p>最も効果的だった呪文: {{ max_damage_spell }}</p>
+            <p>敵に与えた最大ダメージ: {{ max_damage_per_mp }}</p>
+            <p>最も効果的だった呪文: {{ max_damage_per_mp_spell }}</p>
+            <button onclick="location.href='/'">タイトルへもどる</button>
+        </div>
+    </div>
+</body>
+
+</html>

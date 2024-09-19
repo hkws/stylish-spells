@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>戦闘 - 魔法使いのRPG</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div id="game-container">
+        <div id="battle-screen">
+            <div id="enemy-info">
+                <img id="enemy-image" src="" alt="Enemy">
+                <div id="enemy-name"></div>
+                <div id="enemy-hp-container">
+                    <div id="enemy-hp-bar"></div>
+                </div>
+                <div id="enemy-wait-container">
+                    <div id="enemy-wait-bar"></div>
+                </div>
+            </div>
+            <div id="player-info">
+                <div id="player-name">魔法使い</div>
+                <div id="player-hp-container">
+                    <div id="player-hp-bar"></div>
+                </div>
+            </div>
+            <div id="message-window"></div>
+            <div id="input-window">
+                <input type="text" id="spell-input" placeholder="呪文を入力してください...">
+                <button id="cast-button">詠唱</button>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/game.js"></script>
+</body>
+
+</html>

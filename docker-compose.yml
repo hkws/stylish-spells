@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  redis_server:
+    container_name: redis_server
+    image: redis:latest
+    ports:
+      - "6379:6379"
+  backend:
+    container_name: backend
+    build:
+      context: .
+      dockerfile: DevDockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - REDISHOST=redis_server
+      - REDISPORT=6379
+      - BUILD_ENV=${BUILD_ENV:-development}
+      - CERT_FILE=${CERT_FILE:-/etc/ssl/certs/ca-certificates.crt}
+      - PORT=${PORT:-5000}
+      - GOOGLE_APPLICATION_CREDENTIALS=/Users/nttcom/keys/vertex-stylish-spells.json
+      - GOOGLE_CLOUD_PROJECT=teak-flash-436008-q2
+      - GOOGLE_CLOUD_LOCATION=asia-northeast1
+      - GOOGLE_CLOUD_VERTEX_MODEL=gemini-1.5-flash-001
+    depends_on:
+      - redis_server

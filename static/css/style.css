@@ -1,0 +1,84 @@
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+#game-container {
+    width: 800px;
+    height: 600px;
+    background-color: white;
+    border: 2px solid #333;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#title-screen, #battle-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+#enemy-info, #player-info {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#enemy-image {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+}
+
+#enemy-hp-bar, #player-hp-bar, #enemy-wait-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #ddd;
+    margin-top: 10px;
+}
+
+#enemy-hp-bar, #player-hp-bar {
+    background-color: #4CAF50;
+}
+
+#enemy-wait-bar {
+    background-color: #FFA500;
+}
+
+#message-window {
+    width: 100%;
+    height: 100px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+#input-window {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+}
+
+#spell-input {
+    flex-grow: 1;
+    margin-right: 10px;
+    padding: 5px;
+    font-size: 16px;
+}
