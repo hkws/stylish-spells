@@ -2,38 +2,44 @@ import uuid
 import datetime
 from game_logic.player import Player, PlayerAttack
 from game_logic.enemy import Enemy, EnemyAttack
+from game_logic.field import Field
+from game_logic.evaluator import AttackEvaluator
+from game_logic.utils import load_field_data, load_enemy_data
 
 
 class Battle:
-    def __init__(self, player, enemy):
-        self.id = str(uuid.uuid4())
-        self.player: Player = player
-        self.enemy: Enemy = enemy
-        self.log = BattleLog()
-        self.log.start()
-        self._end = False
+
+    def __init__(self, id, player, enemy, field, log, _end, evaluator):
+        self.id = id
+        self.player = player
+        self.enemy = enemy
+        self.field = field
+        self.log = log
+        self._end = _end
+        self.evaluator = evaluator
+    
+    @classmethod
+    def instantiate(cls, enemy_id, field_id):
+        id = str(uuid.uuid4())
+        player: Player = Player.appear()
+        enemy: Enemy = Enemy.spawn(enemy_id)
+        field: Field = Field.form(field_id)
+        log = BattleLog()
+        log.start()
+        _end = False
+        evaluator: AttackEvaluator = AttackEvaluator(field_id, enemy_id)
+        return cls(id, player, enemy, field, log, _end, evaluator)
 
     @classmethod
     def from_dict(cls, data):
-        battle = cls(player=None, enemy=None)
-        battle.id = data["id"]
-        battle.player = Player.from_dict(data["player"])
-        battle.enemy = Enemy.from_dict(data["enemy"])
-        battle.log = BattleLog.from_dict(data["log"])
-        return battle
-
-    def get_id(self):
-        return self.id
-
-    def attack(self, attack):
-        self.log.save_attack(attack)
-
-    def end(self, victory):
-        self.log.end(victory)
-        self._end = True
-
-    def in_battle(self):
-        return not self._end
+        id = data["id"]
+        player = Player.from_dict(data["player"])
+        enemy = Enemy.from_dict(data["enemy"])
+        field = Field.from_dict(data["field"])
+        log = BattleLog.from_dict(data["log"])
+        _end = data["_end"]
+        evaluator = AttackEvaluator(field.id, enemy.id)
+        return cls(id, player, enemy, field, log, _end, evaluator)
 
     def to_dict(self):
         return {
@@ -41,8 +47,45 @@ class Battle:
             "in_battle": self.in_battle(),
             "player": self.player.to_dict(),
             "enemy": self.enemy.to_dict(),
+            "field": self.field.to_dict(),
             "log": self.log.to_dict(),
+            "_end": self._end,
         }
+
+    def get_id(self):
+        return self.id
+
+    def attack_enemy(self, spell):
+        # evaluation
+        spell_eval, field_eval, enemy_eval = self.evaluator.evaluate(spell, self.field.state, self.enemy.state)
+        
+        # attack
+        attack = self.player.attack(spell_eval, field_eval, enemy_eval)
+        self.enemy.take_damage(attack)
+        if self.enemy.is_defeated():
+            self.end(True)
+        if self.player.is_defeated():
+            self.end(False)
+        self.log.save_attack(attack)
+        
+        # update state
+        self.field.update_state(field_eval)
+        self.enemy.update_state(enemy_eval)
+        return attack
+    
+    def attack_player(self):
+        attack = self.enemy.attack()
+        self.player.take_damage(attack)
+        if self.player.is_defeated():
+            self.end(False)
+        return attack
+
+    def end(self, victory):
+        self.log.end(victory)
+        self._end = True
+
+    def in_battle(self):
+        return not self._end
 
 
 class BattleLog:
@@ -108,6 +151,9 @@ class BattleLog:
         self.attacks.append(attack)
 
     def get_stats(self):
+        assert self.finished_at is not None
+        assert self.started_at is not None
+
         max_dmg = 0
         max_dmg_spell = None
         max_dmg_per_mp = 0

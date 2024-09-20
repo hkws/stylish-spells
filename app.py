@@ -21,7 +21,7 @@ def load_battle_state(battle_id):
     state = redis_client.get(battle_id)
     if state is None:
         return None
-    return json.loads(state)
+    return json.loads(state) # type: ignore
 
 
 def restore_battle_state(battle_id):
@@ -55,16 +55,18 @@ def start_game():
     level = int(body.get("level"))
 
     if level == 1:
-        enemy = Enemy("Slime", 50, 10, "slime.png")
+        enemy_id = "slime"
+        field_id = "grassland"
     elif level == 2:
-        enemy = Enemy("Stone Golem", 100, 20, "golem.png")
+        enemy_id = "golem"
+        field_id = "ruins"
     elif level == 3:
-        enemy = Enemy("Dragon", 200, 30, "dragon.png")
+        enemy_id = "dragon"
+        field_id = "volcano"
     else:
         return jsonify({"error": "Invalid level"}), 400
 
-    player = Player(100)
-    battle = Battle(player, enemy)
+    battle = Battle.instantiate(enemy_id, field_id)
     save_battle_state(battle)
 
     return jsonify(load_battle_state(battle.get_id()))
@@ -80,16 +82,11 @@ def cast_spell():
 
     battle_id = body["battle_id"]
     battle = restore_battle_state(battle_id)
-    player = battle.player
-    enemy = battle.enemy
+    if battle is None:
+        return jsonify({"error": "Invalid battle_id"}), 400
 
     spell = body["spell"]
-    attack = player.attack(spell)
-
-    enemy.take_damage(attack)
-    battle.attack(attack)
-    if enemy.is_defeated():
-        battle.end(True)
+    attack = battle.attack_enemy(spell)
     save_battle_state(battle)
 
     return jsonify(
@@ -108,14 +105,10 @@ def enemy_attack():
 
     battle_id = body["battle_id"]
     battle = restore_battle_state(battle_id)
-    player = battle.player
-    enemy = battle.enemy
+    if battle is None:
+        return jsonify({"error": "Invalid battle_id"}), 400
 
-    attack = enemy.attack()
-    player.take_damage(attack)
-    battle.attack(attack)
-    if player.is_defeated():
-        battle.end(False)
+    attack = battle.attack_player()
     save_battle_state(battle)
 
     return jsonify(
@@ -129,6 +122,8 @@ def enemy_attack():
 @app.route("/result/<battle_id>")
 def result(battle_id):
     battle = restore_battle_state(battle_id)
+    if battle is None:
+        return jsonify({"error": "Invalid battle_id"}), 400
     stats = battle.log.get_stats()
     return render_template("result.html", **stats.to_dict())
 

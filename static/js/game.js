@@ -76,11 +76,11 @@ function castSpell() {
         .then(data => {
             state.store(data.state);
             const deal = data.deal;
-            displayMessage(`MP: ${deal.mp} を消費して、${deal.damage} ダメージを与えた！`);
-            displayMessage(deal.enemy_msg);
             if (deal.result_msg) {
                 displayMessage(deal.result_msg);
             }
+            displayMessage(deal.enemy_msg);
+            displayMessage(deal.field_msg);
             updateUI();
             if (!state.in_battle) {
                 endGame(state.victory());
@@ -103,6 +103,9 @@ function updateUI() {
 }
 
 function displayMessage(message) {
+    if (message.length == 0) {
+        return;
+    }
     const messageWindow = document.getElementById('message-window');
     messageWindow.innerText += `\n${message}`;
     messageWindow.scrollTop = messageWindow.scrollHeight - messageWindow.clientHeight;
