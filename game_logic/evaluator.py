@@ -50,18 +50,22 @@ class Evaluator:
         )
         response_obj = response.to_dict()
         try:
-            return json.loads(response_obj["candidates"][0]["content"]["parts"][0]["text"])
+            response_text = response_obj["candidates"][0]["content"]["parts"][0]["text"]
+            response_content = json.loads(response_text)
+            print(response_text)
+            return response_content
         except:
             raise Exception("Response is not in the expected format: {}".format(response_obj))
 
 
 class SpellEvaluation:
-    def __init__(self, spell, category, naturality, cost, coolness):
+    def __init__(self, spell, category, naturality, cost, coolness, attribute):
         self.spell = spell
         self.category = category
         self.naturality = naturality
         self.cost = cost
         self.coolness = coolness
+        self.attribute = attribute
 
     @classmethod
     def from_dict(cls, data):
@@ -71,6 +75,7 @@ class SpellEvaluation:
             naturality=data["naturality"],
             cost=data["cost"],
             coolness=data["coolness"],
+            attribute=data["attribute"]
         )
 
     def to_dict(self):
@@ -80,6 +85,7 @@ class SpellEvaluation:
             "naturality": self.naturality,
             "cost": self.cost,
             "coolness": self.coolness,
+            "attribute": self.attribute
         }
 
 
@@ -133,11 +139,22 @@ class SpellEvaluator:
     - categoryがdebuffの場合: 対象の敵の能力を一時的に少し減らすほどの効果を持つ呪文
 
 ### coolness
-入力された呪文のかっこよさを0~20の21段階で評価してください。加点要因は以下のとおりです。
+入力された呪文のかっこよさを0~20の21段階で評価してください。デフォルト値を0とし、以下の加点要因が多く見受けられるほど加点してください。
 - 常用されない言葉やフレーズを使用している
 - 呪文の内容が独創的である
 - 呪文詠唱の最後に、呪文名を叫んでいる
 
+### attribute
+入力された呪文の属性について、以下のいずれかの属性に分類してください。
+- "fire": 火属性の呪文。火や炎、熱気を操る呪文。
+- "water": 水属性の呪文。水や湿度を操る呪文。
+- "earth": 地属性の呪文。大地や土、岩石を操る呪文。
+- "wind": 風属性の呪文。風や空気を操る呪文。
+- "light": 光属性の呪文。光や聖なる力を操る呪文。categoryがhealおよびbuffの呪文を含む。
+- "dark": 闇属性の呪文。闇や悪魔の力を操る呪文。categoryがdebuffの呪文を含む。
+- "electric": 電気属性の呪文。電気、電流、静電気や雷を操る呪文。
+- "ice": 氷属性の呪文。氷や冷気を操る呪文。
+- "none": 上記以外
 
 """
     RESPONSE_SCHEMA = {
@@ -157,9 +174,13 @@ class SpellEvaluator:
             },
             "coolness": {
                 "type": "INTEGER"
+            },
+            "attribute": {
+                "type": "STRING",
+                "enum": ["fire", "water", "earth", "wind", "light", "dark", "electric", "ice", "none"]
             }
         },
-        "required": ["category", "naturality", "cost", "coolness"]
+        "required": ["category", "naturality", "cost", "coolness", "attribute"]
     }
 
     def __init__(self):

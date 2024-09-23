@@ -1,40 +1,63 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>戦闘 - 魔法使いのRPG</title>
+    <title>Stylish Spell Battle - Battle</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
-
 <body>
-    <div id="game-container">
+    <div class="game-container" id="game-container">
         <div id="battle-screen">
-            <div id="enemy-info">
-                <img id="enemy-image" src="" alt="Enemy">
-                <div id="enemy-name"></div>
-                <div id="enemy-hp-container">
-                    <div id="enemy-hp-bar"></div>
-                </div>
-                <div id="enemy-wait-container">
-                    <div id="enemy-wait-bar"></div>
+            <div class="battle-field" id="battle-field">
+                <div class="enemy">
+                    <img alt="Enemy Dragon" class="enemy-image" id="enemy-image">
+                    <div class="spell-effect" id="spell-effect"></div>
                 </div>
             </div>
-            <div id="player-info">
-                <div id="player-name">魔法使い</div>
-                <div id="player-hp-container">
-                    <div id="player-hp-bar"></div>
+            <div class="status-container">
+                <div class="player-status" id="player-info">
+                    <h2 id="player-name">プレイヤー</h2>
+                    <div class="status-bar" id="player-hp-container">
+                        <span>HP:</span>
+                        <div class="progress-bar">
+                            <div id="player-hp-bar" class="progress-fill hp"></div>
+                        </div>
+                        <span id="player-hp-text"></span>
+                    </div>
+                    <div class="status-bar" id="player-mp-container">
+                        <span>MP:</span>
+                        <div class="progress-bar">
+                            <div id="player-mp-bar" class="progress-fill mp"></div>
+                        </div>
+                        <span id="player-mp-text"></span>
+                    </div>
+                </div>
+                <div class="enemy-status">
+                    <h2 id="enemy-name"></h2>
+                    <div class="status-bar" id="enemy-hp-container">
+                        <span>HP:</span>
+                        <div class="progress-bar">
+                            <div id="enemy-hp-bar" class="progress-fill hp"></div>
+                        </div>
+                        <span id="enemy-hp-text"></span>
+                    </div>
+                    <div class="status-bar" id="enemy-wait-container">
+                        <span>待機:</span>
+                        <div class="progress-bar">
+                            <div id="enemy-wait-bar" class="progress-fill gauge"></div>
+                        </div>
+                        <!-- <span id="enemy-gauge-text">0/100</span> -->
+                    </div>
                 </div>
             </div>
-            <div id="message-window"></div>
-            <div id="input-window">
-                <input type="text" id="spell-input" placeholder="呪文を入力してください...">
-                <button id="cast-button">詠唱</button>
+            <div id="message-window" class="system-message"></div>
+            <div id="input-window" class="spell-form">
+                <input type="text" id="spell-input" placeholder="呪文を入力..." required>
+                <button type="submit" id="cast-button">詠唱</button>
             </div>
         </div>
     </div>
     <script src="/static/js/game.js"></script>
 </body>
-
 </html>

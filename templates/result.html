@@ -1,25 +1,44 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ゲーム結果 - 魔法使いのRPG</title>
+    <title>Stylish Spell Battle - Result</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
-
 <body>
-    <div id="game-container">
+    <div class="game-container result-screen" id="game-container">
         <div id="result-screen">
-            <h1>ゲーム結果: {{"勝利" if victory else "敗北"}}</h1>
-            <p>敵の討伐にかかった時間: {{ battle_time }}秒</p>
-            <p>敵に与えた最大ダメージ: {{ max_damage }}</p>
-            <p>最も効果的だった呪文: {{ max_damage_spell }}</p>
-            <p>最大MP効率: {{ max_damage_per_mp }}</p>
-            <p>最大のMP効率だった呪文: {{ max_damage_per_mp_spell }}</p>
-            <button onclick="location.href='/'">タイトルへもどる</button>
+            <h1 id="battle-result" class="result-title">{{"勝利" if victory else "敗北"}}</h1>
+            <div class="result-stats">
+                <div class="stat-item battle-time">
+                    <h2>戦闘時間</h2>
+                    <p id="battle-time">{{ battle_time }}秒</p>
+                </div>
+                <div class="stat-group">
+                    <div class="stat-item damage">
+                        <h2>最大ダメージ</h2>
+                        <p id="max-damage">{{ max_damage }}</p>
+                    </div>
+                    <div class="stat-item damage-spell">
+                        <h2>最大ダメージを与えた呪文</h2>
+                        <p id="max-damage-spell">{{ max_damage_spell }}</p>
+                    </div>
+                </div>
+                <div class="stat-group">
+                    <div class="stat-item efficiency">
+                        <h2>最大MP効率</h2>
+                        <p id="max-efficiency">{{ max_damage_per_mp }}</p>
+                    </div>
+                    <div class="stat-item efficiency-spell">
+                        <h2>最大MP効率だった呪文</h2>
+                        <p id="max-efficiency-spell">{{ max_damage_per_mp_spell }}</p>
+                    </div>
+                </div>
+            </div>
+            <button id="return-title" class="return-button" onclick="goBack()">タイトルに戻る</button>
         </div>
     </div>
+    <script src="/static/js/game.js"></script>
 </body>
-
 </html>

@@ -7,6 +7,7 @@ class GameState {
     constructor() {
         this.enemy = null;
         this.player = null;
+        this.field = null;
         this.id = null;
         this.in_battle = false;
     }
@@ -24,6 +25,7 @@ class GameState {
     store(data) {
         this.enemy = data.enemy;
         this.player = data.player;
+        this.field = data.field;
         this.id = data.id;
         this.in_battle = data.in_battle;
     }
@@ -32,13 +34,22 @@ class GameState {
     }
 }
 
-function startGame(level) {
+function startGame() {
+    let username = document.getElementById('username').value;
+    let elements = document.getElementsByName('enemy');
+    let enemy = '';
+
+    for (let i = 0; i < elements.length; i++){
+        if (elements.item(i).checked){
+            enemy = elements.item(i).value;
+        }
+    }
     fetch('/start_game', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ "level": level })
+        body: JSON.stringify({ "username": username, "enemy": enemy})
     })
         .then(response => response.json())
         .then(data => {
@@ -53,7 +64,8 @@ async function initBattleScreen() {
     await state.load();
     console.log(state);
     if (state.in_battle) {
-        document.getElementById('enemy-image').src = `/static/images/${state.enemy.image}`;
+        document.getElementById('battle-field').style.background = `url(/static/images/fields/${state.field.image}) center/cover`;
+        document.getElementById('enemy-image').src = `/static/images/enemies/${state.enemy.image}`;
         document.getElementById('enemy-name').textContent = state.enemy.name;
         updateUI();
         startWaitGauge();
@@ -76,6 +88,7 @@ function castSpell() {
         .then(data => {
             state.store(data.state);
             const deal = data.deal;
+            showSpellEffect(deal.spell.attribute, deal.spell.cost);
             if (deal.result_msg) {
                 displayMessage(deal.result_msg);
             }
@@ -89,14 +102,31 @@ function castSpell() {
     document.getElementById('spell-input').value = '';
 }
 
-function updateUI() {
-    const enemyHPBar = document.getElementById('enemy-hp-bar');
-    enemyHPBar.style.width = `${(state.enemy.hp / state.enemy.max_hp) * 100}%`;
-    enemyHPBar.textContent = `${state.enemy.hp} / ${state.enemy.max_hp}`;
+function showSpellEffect(attribute, cost) {
+    imgsrc = `/static/images/effects/${attribute}_${cost}.png`;
+    const effect = document.getElementById('spell-effect');
+    effect.style.backgroundImage = `url(${imgsrc})`;
+    effect.style.opacity = '1';
+    setTimeout(() => {
+        effect.style.opacity = '0';
+    }, 1000);
+}
 
+function updateUI() {
     const playerHPBar = document.getElementById('player-hp-bar');
     playerHPBar.style.width = `${(state.player.hp / 100) * 100}%`;
-    playerHPBar.textContent = `${state.player.hp} / 100`;
+    const playerHPText = document.getElementById('player-hp-text');
+    playerHPText.textContent = `${state.player.hp}/${state.player.max_hp}`;
+
+    const playerMPBar = document.getElementById('player-mp-bar');
+    playerMPBar.style.width = `${(state.player.mp / 100) * 100}%`;
+    const playerMPText = document.getElementById('player-mp-text');
+    playerMPText.textContent = `${state.player.mp}/${state.player.max_mp}`;
+
+    const enemyHPBar = document.getElementById('enemy-hp-bar');
+    enemyHPBar.style.width = `${(state.enemy.hp / state.enemy.max_hp) * 100}%`;
+    const enemyHPText = document.getElementById('enemy-hp-text');
+    enemyHPText.textContent = `${state.enemy.hp} / ${state.enemy.max_hp}`;
 
     const waitBar = document.getElementById('enemy-wait-bar');
     waitBar.style.width = `${(waitGauge / WAIT_GAUGE_MAX) * 100}%`;
@@ -151,11 +181,15 @@ function endGame(playerWon) {
     if (playerWon) {
         displayMessage("敵を倒した！勝利だ！");
     } else {
-        displayMessage("あなたは倒れた...ゲームオーバー");
+        displayMessage("あなたは倒れた...");
     }
     setTimeout(() => {
         window.location.href = `/result/${state.id}`;
     }, 1000);
+}
+
+function goBack() {
+    window.location.href = '/';
 }
 
 // ページ読み込み時の初期化

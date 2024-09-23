@@ -1,39 +1,44 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>魔法使いのRPG</title>
+    <title>Stylish Spell Battle</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
-
 <body>
-    <div id="game-container">
+    <div class="game-container title-screen" id="game-container">
         <div id="title-screen">
-            <h1>魔法使いのRPG</h1>
-            <button onclick="startGame(1)">レベル1</button>
-            <button onclick="startGame(2)">レベル2</button>
-            <button onclick="startGame(3)">レベル3</button>
-            <button onclick="exitGame()">おわる</button>
-        </div>
-        <div id="battle-screen" style="display: none;">
-            <div id="enemy-info">
-                <img id="enemy-image" src="" alt="Enemy">
-                <div id="enemy-hp-bar"></div>
-                <div id="enemy-wait-bar"></div>
-            </div>
-            <div id="player-info">
-                <div id="player-hp-bar"></div>
-            </div>
-            <div id="message-window"></div>
-            <div id="input-window">
-                <input type="text" id="spell-input" placeholder="呪文を入力してください...">
-                <button onclick="castSpell()">詠唱</button>
+            <img src="static/images/title.png" alt="RPG Title Image" class="title-image">
+            <div id="game-start-form" class="game-start-form">
+                <div class="form-group">
+                    <label for="username">ユーザー名:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label>敵キャラクター選択:</label>
+                    <div class="enemy-selection">
+                        <label>
+                            <input type="radio" name="enemy" value="slime" required>
+                            <img src="static/images/enemies/slime.png" alt="Slime" class="enemy-icon">
+                            スライム
+                        </label>
+                        <label>
+                            <input type="radio" name="enemy" value="golem" required>
+                            <img src="static/images/enemies/golem.png" alt="Golem" class="enemy-icon">
+                            ゴーレム
+                        </label>
+                        <label>
+                            <input type="radio" name="enemy" value="dragon" required>
+                            <img src="static/images/enemies/dragon.png" alt="Dragon" class="enemy-icon">
+                            ドラゴン
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="start-button" onclick="startGame()">ゲーム開始</button>
             </div>
         </div>
     </div>
     <script src="/static/js/game.js"></script>
 </body>
-
 </html>

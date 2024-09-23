@@ -72,11 +72,12 @@ class Player:
             damage = 0
             result_msg = "MPが足りない！"
             enemy_msg = ""
+            field_msg = ""
         else:
             self.mp -= mp
         
         return PlayerAttack(
-            spell=spell_eval.spell,
+            spell=spell_eval,
             mp=mp,
             damage=damage,
             result_msg=result_msg,
@@ -86,7 +87,7 @@ class Player:
 
 
 class PlayerAttack:
-    def __init__(self, spell, mp, damage, result_msg, enemy_msg, field_msg):
+    def __init__(self, spell: SpellEvaluation, mp, damage, result_msg, enemy_msg, field_msg):
         self.spell = spell
         self.mp = mp
         self.damage = damage
@@ -97,7 +98,7 @@ class PlayerAttack:
     @classmethod
     def from_dict(cls, data):
         attack = cls(
-            spell=data["spell"],
+            spell=SpellEvaluation.from_dict(data["spell"]),
             mp=data["mp"],
             damage=data["damage"],
             result_msg=data["result_msg"],
@@ -109,7 +110,7 @@ class PlayerAttack:
     def to_dict(self):
         return {
             "from": "player",
-            "spell": self.spell,
+            "spell": self.spell.to_dict(),
             "mp": self.mp,
             "damage": self.damage,
             "result_msg": self.result_msg,

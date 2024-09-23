@@ -1,3 +1,8 @@
+# Stylish Spell Battle
+
+## TODO
+- [ ] ダメージ計算ロジックの微修正
+
 ## Boot up locally
 ```sh
 docker compose up --build

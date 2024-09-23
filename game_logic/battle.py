@@ -1,10 +1,10 @@
+import json
 import uuid
 import datetime
 from game_logic.player import Player, PlayerAttack
 from game_logic.enemy import Enemy, EnemyAttack
 from game_logic.field import Field
 from game_logic.evaluator import AttackEvaluator
-from game_logic.utils import load_field_data, load_enemy_data
 
 
 class Battle:
@@ -55,7 +55,7 @@ class Battle:
     def get_id(self):
         return self.id
 
-    def attack_enemy(self, spell):
+    def attack_enemy(self, redis_client, spell):
         # evaluation
         spell_eval, field_eval, enemy_eval = self.evaluator.evaluate(spell, self.field.state, self.enemy.state)
         
@@ -66,6 +66,10 @@ class Battle:
             self.end(True)
         if self.player.is_defeated():
             self.end(False)
+
+        state = load_battle_state(redis_client, self.get_id())
+        if state is not None and state["_end"]:
+            return None
         self.log.save_attack(attack)
         
         # update state
@@ -163,10 +167,10 @@ class BattleLog:
                 continue
             if max_dmg < attack.damage:
                 max_dmg = attack.damage
-                max_dmg_spell = attack.spell
+                max_dmg_spell = attack.spell.spell
             if max_dmg_per_mp < attack.damage / attack.mp:
                 max_dmg_per_mp = attack.damage / attack.mp
-                max_dmg_per_mp_spell = attack.spell
+                max_dmg_per_mp_spell = attack.spell.spell
 
         return BattleStats(
             **{
@@ -206,3 +210,22 @@ class BattleStats:
             "max_damage_per_mp_spell": self.max_damage_per_mp_spell,
             "victory": self.victory,
         }
+
+
+def save_battle_state(redis_client, battle: Battle):
+    battle_id = battle.get_id()
+    redis_client.set(battle_id, json.dumps(battle.to_dict()))
+
+
+def load_battle_state(redis_client, battle_id):
+    state = redis_client.get(battle_id)
+    if state is None:
+        return None
+    return json.loads(state) # type: ignore
+
+
+def restore_battle_state(redis_client, battle_id):
+    state = load_battle_state(redis_client, battle_id)
+    if state is None:
+        return None
+    return Battle.from_dict(state)

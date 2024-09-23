@@ -2,6 +2,7 @@
     {
         "id": "grassland",
         "name": "草原",
+        "image": "grassland.png",
         "instruction_info": {
             "feature": "草原。風が吹き抜ける広大な草原。遠くには山々が見える。",
             "harnessing_example": [
@@ -17,6 +18,7 @@
     {
         "id": "ruins",
         "name": "遺跡",
+        "image": "ruins.png",
         "instruction_info": {
             "feature": "遺跡。石のブロックを組み合わせて組み上げられていた遺跡のようだが、ところどころ崩れている。光が差し込んでおり、幻想的な雰囲気。",
             "harnessing_example": [
@@ -32,6 +34,7 @@
     {
         "id": "volcano",
         "name": "火山",
+        "image": "volcano.png",
         "instruction_info": {
             "feature": "火山。溶岩が流れ、煙が立ち上る。熱気が立ち込め、周囲は暑い。",
             "harnessing_example": [
