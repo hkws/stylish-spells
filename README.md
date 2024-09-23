@@ -4,6 +4,7 @@
 - [ ] ダメージ計算ロジックの微修正
 
 ## Boot up locally
+podmanで起動する場合、backend1 containerを削除してから下記を実行すること。
 ```sh
 docker compose up --build
 ```
